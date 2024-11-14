@@ -93,6 +93,29 @@ forward DIALOG:Dialog_Reopen(playerid);
 forward DIALOG:Dialog_Main(playerid);
 forward Dialog_OnQuery(playerid, deep, const string:func[]);
 
+stock bool:Dialog_IsRender(playerid)
+{
+    if(pDialog[playerid][dialog_history_deep][pDialog[playerid][dialog_currentdeep]] == pDialog[playerid][dialog_deep])
+    {
+        return true;
+    }
+    else
+    {
+        if(pDialog[playerid][dialog_history_list][pDialog[playerid][dialog_currentdeep]] == pDialog[playerid][dialog_list])
+        {
+            return false;
+        }
+        else
+        {
+            if(pDialog[playerid][dialog_style] != DIALOG_STYLE_LIST && pDialog[playerid][dialog_style] != DIALOG_STYLE_TABLIST && pDialog[playerid][dialog_style] != DIALOG_STYLE_TABLIST_HEADERS) 
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+}
+
 stock DIALOG:Dialog_Button(playerid, const string:left[], const string:right[] = "")
 {
     if(pDialog[playerid][dialog_head][0] == EOS && pDialog[playerid][dialog_body][0] == EOS) {
@@ -167,29 +190,6 @@ stock Dialog_GetValue(playerid, listitem)
     return pDialogValue[playerid][pDialog[playerid][dialog_currentdeep]][listitem];
 }
 
-stock bool:Dialog_IsRender(playerid)
-{
-    if(pDialog[playerid][dialog_history_deep][pDialog[playerid][dialog_currentdeep]] == pDialog[playerid][dialog_deep])
-    {
-        return true;
-    }
-    else
-    {
-        if(pDialog[playerid][dialog_history_list][pDialog[playerid][dialog_currentdeep]] == pDialog[playerid][dialog_list])
-        {
-            return false;
-        }
-        else
-        {
-            if(pDialog[playerid][dialog_style] != DIALOG_STYLE_LIST && pDialog[playerid][dialog_style] != DIALOG_STYLE_TABLIST && pDialog[playerid][dialog_style] != DIALOG_STYLE_TABLIST_HEADERS) 
-            {
-                return false;
-            }
-            return true;
-        }
-    }
-}
-
 #if defined _INC_y_va
     stock bool:Dialog_Body(playerid, DIALOG_STYLE:style, const string:body[], va_args<>)
 #else
@@ -244,8 +244,8 @@ stock bool:Dialog_IsRender(playerid)
     if(Dialog_IsRender(playerid))
     {
         #if defined _INC_y_va
-            dialogbuffer[0] = EOS;
             strcat(dialogbuffer, "%s");
+            dialogbuffer[0] = EOS;
             strcat(dialogbuffer, body);
             strcat(dialogbuffer, "\n");
             format(pDialog[playerid][dialog_body], MAX_DIALOG_BODY, dialogbuffer, pDialog[playerid][dialog_body], va_start<2>);
